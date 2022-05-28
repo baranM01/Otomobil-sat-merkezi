@@ -1,0 +1,119 @@
+GÖRSEL PROGRAMLAMA PROJE DE KULLANDIĞIM SQL KODLARI :
+
+
+USE GörselProgramlamaProje;
+
+CREATE TABLE ILANLAR
+(
+Markalar varchar(30) NOT NULL,
+Modeller varchar(30) NOT NULL,
+ModelYili smallint NOT NULL,
+Kilometre int NULL,
+HasarKaydiTutari int NULL,
+HasarKaydi char(3)NOT NULL,-- "var" veya "yok"
+Kimden char(10),--Sahibinden veya galeriden
+AgirHasarli char(6),-- evet veya hayır
+Renk varchar(12)
+);
+
+ALTER TABLE ILANLAR ADD Fiyatlar int NOT NULL DEFAULT 2000000;
+UPDATE ILANLAR SET Fiyatlar = 1350000 WHERE Markalar LIKE 'M%';
+
+ALTER TABLE ILANLAR ADD id int identity(1,2);
+
+ALTER TABLE ILANLAR DROP COLUMN id ;
+
+
+ALTER TABLE ILANLAR ADD ID int NOT NULL DEFAULT 1;
+
+
+SELECT*FROM ILANLAR;
+
+UPDATE ILANLAR SET ID = 2 WHERE HasarKaydiTutari IS NOT NULL;
+
+UPDATE ILANLAR SET ID = 1 WHERE HasarKaydi='yok';
+
+
+DROP TABLE ILANLAR; -- TABLOYU VE PROSEDÜRLERİ SİLDİK VE ŞİMDİ EKSİKSİZ BİR ŞEKİLDE OLUŞTURACAĞIZ TEKRARDAN 
+
+DROP PROC sp_arama;
+DROP PROC sp_ekle;
+DROP PROC sp_guncelle;
+DROP PROC sp_listele;
+DROP PROC sp_sil;
+
+
+CREATE TABLE ILANLAR
+(
+Markalar varchar(30) NOT NULL,
+Modeller varchar(30) NOT NULL,
+ModelYili smallint NOT NULL,
+Kilometre int NULL,
+HasarKaydiTutari int NULL,
+HasarKaydi char(3)NOT NULL,-- "var" veya "yok"
+Kimden char(10),--Sahibinden veya galeriden
+AgirHasarli char(6),-- evet veya hayır
+Renk varchar(12),
+Fiyatlar int NOT NULL,
+ID int identity(1,1) NOT NULL
+);
+
+
+
+
+-- PROSEDÜRLER :
+
+
+-- EKLE Butonu için olan prosedür :
+
+CREATE PROC sp_ekle (@Markalar varchar(30),@Modeller varchar(30),@ModelYili smallint,@Kilometre int,
+@HasarKaydiTutari int,@HasarKaydi char(3),@Kimden char(10),@AgirHasarli char(6),@Renk varchar(12),@Fiyatlar int)
+AS
+BEGIN
+INSERT INTO ILANLAR (Markalar,Modeller,ModelYili,Kilometre,HasarKaydiTutari,HasarKaydi,Kimden,AgirHasarli,Renk,Fiyatlar)
+VALUES (@Markalar,@Modeller,@ModelYili,@Kilometre,@HasarKaydiTutari,@HasarKaydi,@Kimden,@AgirHasarli,@Renk,@Fiyatlar);
+END
+
+-- LİSTELE (SELECT) butonu için olan prosedür :
+
+CREATE PROC sp_listele
+AS
+BEGIN
+SELECT * FROM ILANLAR
+END
+
+-- SİL (DELETE) butonu için olan prosedür :
+
+CREATE PROC sp_sil (@Kilometre int)
+AS
+BEGIN
+DELETE FROM ILANLAR WHERE @Kilometre=Kilometre
+END
+
+
+-- GÜNCELLE (UPDATE) butonu için olan prosedür :
+
+CREATE PROC sp_guncelle
+@Markalar varchar(30),@Modeller varchar(30),@ModelYili smallint,@Kilometre int,
+@HasarKaydiTutari int,@HasarKaydi char(3),@Kimden char(10),@AgirHasarli char(6),@Renk varchar(12),@Fiyatlar int,@ID int
+AS
+BEGIN
+UPDATE ILANLAR SET Markalar=@Markalar,Modeller=@Modeller,ModelYili=@ModelYili,Kilometre=@Kilometre,HasarKaydiTutari=@HasarKaydiTutari,HasarKaydi=@HasarKaydi,Kimden=@Kimden,AgirHasarli=@AgirHasarli,Renk=@Renk,Fiyatlar=@Fiyatlar
+WHERE ID =@ID
+END
+
+
+-- ARAMA (SEARCH) butonu için olan prosedür :
+
+CREATE PROC sp_arama(@Modeller varchar(30))
+AS
+BEGIN
+SELECT*FROM ILANLAR WHERE @Modeller LIKE '%'+Modeller+'%'
+END
+
+
+SELECT * FROM ILANLAR;
+
+
+
+
